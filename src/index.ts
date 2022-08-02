@@ -16,13 +16,16 @@ export const getNodeAfterCreated = (
 })
 
 export const onPan = <C extends readonly [] | {} | undefined = undefined>(
-  cb: (pan: {
-    event: PointerEvent
-    type: 'start' | 'move' | 'end'
-    delta: { x: number, y: number }
-    offset: { x: number, y: number }
-    detail: C
-  }, ctx: TypeReaseContextElement) => void,
+  cb: (
+    pan: {
+      event: PointerEvent
+      type: 'start' | 'move' | 'end'
+      delta: { x: number, y: number }
+      offset: { x: number, y: number }
+      detail: C
+   },
+    ctx: TypeReaseContextElement
+  ) => void,
   detail?: C
 ): TypeReaseUse => (ctx) => {
     const node = ctx.node as HTMLElement
