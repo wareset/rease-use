@@ -2,20 +2,20 @@ import { TypeReaseContext, TypeReaseUse } from 'rease'
 import { TypeReaseContextElement, ReaseStore } from 'rease'
 import { listenGlobal } from 'rease'
 
-export const useGetNodeBeforeCreated = (
+export const getNodeBeforeCreated = (
   storeForNode: ReaseStore<any>
 ) => (ctx: TypeReaseContext) =>
   (storeForNode.$ = ctx.node,
   { destroy: (): void => { storeForNode.$ = null } })
 
-export const useGetNodeAfterCreated = (
+export const getNodeAfterCreated = (
   storeForNode: ReaseStore<any>
 ): TypeReaseUse => () => ({
   created: (ctx): void => { storeForNode.$ = ctx.node },
   destroy: (): void => { storeForNode.$ = null },
 })
 
-export const useOnPan = <C extends readonly [] | {} | undefined = undefined>(
+export const onPan = <C extends readonly [] | {} | undefined = undefined>(
   cb: (pan: {
     event: PointerEvent
     type: 'start' | 'move' | 'end'
