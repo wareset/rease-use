@@ -1,6 +1,6 @@
 {
   "name": "rease-use",
-  "version": "0.0.1",
+  "version": "0.2.0",
   "description": "wip",
   "keywords": [
     "rease",
@@ -32,13 +32,9 @@
     "dev": "npm run -s dester -- -w --no-r -m"
   },
   "peerDependencies": {
-    "rease": "^0.1.0"
+    "rease": "^0.2.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.18.0",
-    "@babel/plugin-proposal-class-properties": "^7.18.0",
-    "@babel/plugin-transform-block-scoping": "^7.18.0",
-    "@babel/plugin-transform-template-literals": "^7.18.0",
     "dester": "0.x",
     "typescript": "4.x"
   }

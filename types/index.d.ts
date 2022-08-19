@@ -1,9 +1,9 @@
 import { TypeReaseContext, TypeReaseUse } from 'rease';
-import { TypeReaseContextElement, ReaseStore } from 'rease';
-export declare const getNodeBeforeCreated: (storeForNode: ReaseStore<any>) => (ctx: TypeReaseContext) => {
+import { TypeReaseContextElement, ReaseStorage } from 'rease';
+export declare const getNodeBeforeCreated: (storeForNode: ReaseStorage<any>) => (ctx: TypeReaseContext) => {
     destroy: () => void;
 };
-export declare const getNodeAfterCreated: (storeForNode: ReaseStore<any>) => TypeReaseUse;
+export declare const getNodeAfterCreated: (storeForNode: ReaseStorage<any>) => TypeReaseUse;
 export declare const onPan: <C extends {} | readonly [] = undefined>(cb: (pan: {
     event: PointerEvent;
     type: 'start' | 'move' | 'end';

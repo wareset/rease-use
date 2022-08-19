@@ -1,15 +1,15 @@
 import { TypeReaseContext, TypeReaseUse } from 'rease'
-import { TypeReaseContextElement, ReaseStore } from 'rease'
+import { TypeReaseContextElement, ReaseSubject } from 'rease'
 import { listenGlobal } from 'rease'
 
 export const getNodeBeforeCreated = (
-  storeForNode: ReaseStore<any>
+  storeForNode: ReaseSubject<any>
 ) => (ctx: TypeReaseContext) =>
   (storeForNode.$ = ctx.node,
   { destroy: (): void => { storeForNode.$ = null } })
 
 export const getNodeAfterCreated = (
-  storeForNode: ReaseStore<any>
+  storeForNode: ReaseSubject<any>
 ): TypeReaseUse => () => ({
   created: (ctx): void => { storeForNode.$ = ctx.node },
   destroy: (): void => { storeForNode.$ = null },

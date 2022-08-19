@@ -5,7 +5,7 @@ index.ts
 */
 import { listenGlobal as e } from "rease";
 
-const t = e => t => (e.$ = t.node, {
+var t = e => t => (e.$ = t.node, {
     destroy: () => {
         e.$ = null;
     }
@@ -17,7 +17,7 @@ const t = e => t => (e.$ = t.node, {
         e.$ = null;
     }
 }), d = (t, o) => d => {
-    const n = d.node, x = {
+    var n = d.node, x = {
         ctx: d,
         is: !1,
         dx: 0,
@@ -40,14 +40,14 @@ const t = e => t => (e.$ = t.node, {
         }, d.ctx);
     }), x), e(document, "pointermove", ((e, d) => {
         if (d.is) {
-            const n = e.clientX, x = e.clientY, y = n - d.dx, i = x - d.dy;
-            d.ox += y, d.oy += i, t({
+            var n = e.clientX, x = e.clientY, y = n - d.dx, r = x - d.dy;
+            d.ox += y, d.oy += r, t({
                 type: "move",
                 event: e,
                 detail: o,
                 delta: {
                     x: y,
-                    y: i
+                    y: r
                 },
                 offset: {
                     x: d.ox,
@@ -71,7 +71,7 @@ const t = e => t => (e.$ = t.node, {
         }, d.ctx));
     }), x) ];
     return () => {
-        for (let e = y.length; e--; ) y[e]();
+        for (var e = y.length; e--; ) y[e]();
     };
 };
 

@@ -21,14 +21,14 @@ exports.getNodeAfterCreated = e => () => ({
         e.$ = null;
     }
 }), exports.onPan = (t, o) => d => {
-    const n = d.node, l = {
+    var n = d.node, r = {
         ctx: d,
         is: !1,
         dx: 0,
         dy: 0,
         ox: 0,
         oy: 0
-    }, r = [ e.listenGlobal(n, "pointerdown", ((e, d) => {
+    }, l = [ e.listenGlobal(n, "pointerdown", ((e, d) => {
         d.is = !0, d.ox = d.oy = 0, d.dx = e.clientX, d.dy = e.clientY, t({
             type: "start",
             event: e,
@@ -42,24 +42,24 @@ exports.getNodeAfterCreated = e => () => ({
                 y: 0
             }
         }, d.ctx);
-    }), l), e.listenGlobal(document, "pointermove", ((e, d) => {
+    }), r), e.listenGlobal(document, "pointermove", ((e, d) => {
         if (d.is) {
-            const n = e.clientX, l = e.clientY, r = n - d.dx, x = l - d.dy;
-            d.ox += r, d.oy += x, t({
+            var n = e.clientX, r = e.clientY, l = n - d.dx, x = r - d.dy;
+            d.ox += l, d.oy += x, t({
                 type: "move",
                 event: e,
                 detail: o,
                 delta: {
-                    x: r,
+                    x: l,
                     y: x
                 },
                 offset: {
                     x: d.ox,
                     y: d.oy
                 }
-            }, d.ctx), d.dx = n, d.dy = l;
+            }, d.ctx), d.dx = n, d.dy = r;
         }
-    }), l), e.listenGlobal(document, "pointerup", ((e, d) => {
+    }), r), e.listenGlobal(document, "pointerup", ((e, d) => {
         d.is && (d.is = !1, t({
             type: "end",
             event: e,
@@ -73,8 +73,8 @@ exports.getNodeAfterCreated = e => () => ({
                 y: d.oy
             }
         }, d.ctx));
-    }), l) ];
+    }), r) ];
     return () => {
-        for (let e = r.length; e--; ) r[e]();
+        for (var e = l.length; e--; ) l[e]();
     };
 };
