@@ -29,24 +29,18 @@ export const onPan = <C extends readonly [] | {} | undefined = undefined>(
   detail?: C
 ): TypeReaseUse => (ctx) => {
     const node = ctx.node as HTMLElement
-    const context = { ctx, is: false, dx: 0, dy: 0, ox: 0, oy: 0 }
+    const context = { ctx, isDown: false, isMove: false, dx: 0, dy: 0, ox: 0, oy: 0 }
     const unlisteners = [
       //! FIX FOR MOBILES
-      listenGlobal(node, 'touchstart-prevent', []),
+      listenGlobal(node, 'touchstart-prevent-stop', []),
+      listenGlobal(node, 'touchmove-prevent-stop', []),
       listenGlobal(node, 'pointerdown', (e: PointerEvent, c) => {
-        c.is = true
+        c.isDown = true, c.isMove = false
         c.ox = c.oy = 0
         c.dx = e.clientX, c.dy = e.clientY
-        cb({
-          type  : 'start',
-          event : e,
-          detail: detail!,
-          delta : { x: 0, y: 0 },
-          offset: { x: 0, y: 0 }
-        }, c.ctx)
       }, context),
       listenGlobal(document, 'pointermove', (e: PointerEvent, c) => {
-        if (c.is) {
+        if (c.isMove) {
           const cx = e.clientX, cy = e.clientY
           const dx = cx - c.dx, dy = cy - c.dy
           c.ox += dx, c.oy += dy
@@ -58,11 +52,20 @@ export const onPan = <C extends readonly [] | {} | undefined = undefined>(
             offset: { x: c.ox, y: c.oy }
           }, c.ctx)
           c.dx = cx, c.dy = cy
+        } else if (c.isDown) {
+          c.isDown = false, c.isMove = true
+          cb({
+            type  : 'start',
+            event : e,
+            detail: detail!,
+            delta : { x: 0, y: 0 },
+            offset: { x: 0, y: 0 }
+          }, c.ctx)
         }
       }, context),
       listenGlobal(document, 'pointerup', (e: PointerEvent, c) => {
-        if (c.is) {
-          c.is = false
+        if (c.isMove) {
+          c.isDown = c.isMove = false
           cb({
             type  : 'end',
             event : e,

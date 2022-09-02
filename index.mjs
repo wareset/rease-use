@@ -5,75 +5,76 @@ index.ts
 */
 import { listenGlobal as e } from "rease";
 
-var t = e => t => (e.$ = t.node, {
+var o = e => o => (e.$ = o.node, {
     destroy: () => {
         e.$ = null;
     }
-}), o = e => () => ({
-    created: t => {
-        e.$ = t.node;
+}), t = e => () => ({
+    created: o => {
+        e.$ = o.node;
     },
     destroy: () => {
         e.$ = null;
     }
-}), d = (t, o) => d => {
-    var n = d.node, r = {
-        ctx: d,
-        is: !1,
+}), n = (o, t) => n => {
+    var d = n.node, i = {
+        ctx: n,
+        isDown: !1,
+        isMove: !1,
         dx: 0,
         dy: 0,
         ox: 0,
         oy: 0
-    }, x = [ //! FIX FOR MOBILES
-    e(n, "touchstart-prevent", []), e(n, "pointerdown", ((e, d) => {
-        d.is = !0, d.ox = d.oy = 0, d.dx = e.clientX, d.dy = e.clientY, t({
-            type: "start",
-            event: e,
-            detail: o,
-            delta: {
-                x: 0,
-                y: 0
-            },
-            offset: {
-                x: 0,
-                y: 0
-            }
-        }, d.ctx);
-    }), r), e(document, "pointermove", ((e, d) => {
-        if (d.is) {
-            var n = e.clientX, r = e.clientY, x = n - d.dx, y = r - d.dy;
-            d.ox += x, d.oy += y, t({
+    }, s = [ //! FIX FOR MOBILES
+    e(d, "touchstart-prevent-stop", []), e(d, "touchmove-prevent-stop", []), e(d, "pointerdown", ((e, o) => {
+        o.isDown = !0, o.isMove = !1, o.ox = o.oy = 0, o.dx = e.clientX, o.dy = e.clientY;
+    }), i), e(document, "pointermove", ((e, n) => {
+        if (n.isMove) {
+            var d = e.clientX, i = e.clientY, s = d - n.dx, r = i - n.dy;
+            n.ox += s, n.oy += r, o({
                 type: "move",
                 event: e,
-                detail: o,
+                detail: t,
                 delta: {
-                    x: x,
-                    y: y
+                    x: s,
+                    y: r
                 },
                 offset: {
-                    x: d.ox,
-                    y: d.oy
+                    x: n.ox,
+                    y: n.oy
                 }
-            }, d.ctx), d.dx = n, d.dy = r;
-        }
-    }), r), e(document, "pointerup", ((e, d) => {
-        d.is && (d.is = !1, t({
-            type: "end",
+            }, n.ctx), n.dx = d, n.dy = i;
+        } else n.isDown && (n.isDown = !1, n.isMove = !0, o({
+            type: "start",
             event: e,
-            detail: o,
+            detail: t,
             delta: {
                 x: 0,
                 y: 0
             },
             offset: {
-                x: d.ox,
-                y: d.oy
+                x: 0,
+                y: 0
             }
-        }, d.ctx));
-    }), r) ];
+        }, n.ctx));
+    }), i), e(document, "pointerup", ((e, n) => {
+        n.isMove && (n.isDown = n.isMove = !1, o({
+            type: "end",
+            event: e,
+            detail: t,
+            delta: {
+                x: 0,
+                y: 0
+            },
+            offset: {
+                x: n.ox,
+                y: n.oy
+            }
+        }, n.ctx));
+    }), i) ];
     return () => {
-        for (var e = x.length; e--; ) x[e]();
+        for (var e = s.length; e--; ) s[e]();
     };
 };
 
-export { o as getNodeAfterCreated, t as getNodeBeforeCreated, d as onPan };
+export { t as getNodeAfterCreated, o as getNodeBeforeCreated, n as onPan };
