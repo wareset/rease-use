@@ -21,14 +21,15 @@ exports.getNodeAfterCreated = e => () => ({
         e.$ = null;
     }
 }), exports.onPan = (t, o) => d => {
-    var n = d.node, r = {
+    var l = d.node, n = {
         ctx: d,
         is: !1,
         dx: 0,
         dy: 0,
         ox: 0,
         oy: 0
-    }, l = [ e.listenGlobal(n, "pointerdown", ((e, d) => {
+    }, r = [ //! FIX FOR MOBILES
+    e.listenGlobal(l, "touchstart-prevent", []), e.listenGlobal(l, "pointerdown", ((e, d) => {
         d.is = !0, d.ox = d.oy = 0, d.dx = e.clientX, d.dy = e.clientY, t({
             type: "start",
             event: e,
@@ -42,24 +43,24 @@ exports.getNodeAfterCreated = e => () => ({
                 y: 0
             }
         }, d.ctx);
-    }), r), e.listenGlobal(document, "pointermove", ((e, d) => {
+    }), n), e.listenGlobal(document, "pointermove", ((e, d) => {
         if (d.is) {
-            var n = e.clientX, r = e.clientY, l = n - d.dx, x = r - d.dy;
-            d.ox += l, d.oy += x, t({
+            var l = e.clientX, n = e.clientY, r = l - d.dx, x = n - d.dy;
+            d.ox += r, d.oy += x, t({
                 type: "move",
                 event: e,
                 detail: o,
                 delta: {
-                    x: l,
+                    x: r,
                     y: x
                 },
                 offset: {
                     x: d.ox,
                     y: d.oy
                 }
-            }, d.ctx), d.dx = n, d.dy = r;
+            }, d.ctx), d.dx = l, d.dy = n;
         }
-    }), r), e.listenGlobal(document, "pointerup", ((e, d) => {
+    }), n), e.listenGlobal(document, "pointerup", ((e, d) => {
         d.is && (d.is = !1, t({
             type: "end",
             event: e,
@@ -73,8 +74,8 @@ exports.getNodeAfterCreated = e => () => ({
                 y: d.oy
             }
         }, d.ctx));
-    }), r) ];
+    }), n) ];
     return () => {
-        for (var e = l.length; e--; ) l[e]();
+        for (var e = r.length; e--; ) r[e]();
     };
 };

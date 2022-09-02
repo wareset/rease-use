@@ -31,6 +31,8 @@ export const onPan = <C extends readonly [] | {} | undefined = undefined>(
     const node = ctx.node as HTMLElement
     const context = { ctx, is: false, dx: 0, dy: 0, ox: 0, oy: 0 }
     const unlisteners = [
+      //! FIX FOR MOBILES
+      listenGlobal(node, 'touchstart-prevent', []),
       listenGlobal(node, 'pointerdown', (e: PointerEvent, c) => {
         c.is = true
         c.ox = c.oy = 0
