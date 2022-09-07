@@ -5,7 +5,7 @@ export declare const getNodeBeforeCreated: (storeForNode: ReaseSubject<any>) => 
 };
 export declare const getNodeAfterCreated: (storeForNode: ReaseSubject<any>) => TypeReaseUse;
 export declare const onPan: <C extends {} | readonly [] = undefined>(cb: (pan: {
-    event: PointerEvent;
+    event: TouchEvent | MouseEvent;
     type: 'start' | 'move' | 'end';
     delta: {
         x: number;

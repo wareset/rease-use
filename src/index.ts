@@ -15,15 +15,29 @@ export const getNodeAfterCreated = (
   destroy: (): void => { storeForNode.$ = null },
 })
 
-const fix = (e: TouchEvent, c: any): void => {
+// const fix = (e: TouchEvent, c: any): void => {
+//   e.stopPropagation()
+//   if (c.isMove && e.cancelable) e.preventDefault()
+// }
+
+const fix = (e: TouchEvent | MouseEvent): void => {
   e.stopPropagation()
-  if (c.isMove && e.cancelable) e.preventDefault()
+  if (e.cancelable) e.preventDefault()
+}
+
+const getClientXY = (evt: TouchEvent | MouseEvent): [number, number] => {
+  let cx = 0, cy = 0
+  if ('touches' in evt) {
+    const touch = evt.touches[0]
+    if (touch) cx = touch.clientX, cy = touch.clientY
+  } else cx = evt.clientX, cy = evt.clientY
+  return [cx, cy]
 }
 
 export const onPan = <C extends readonly [] | {} | undefined = undefined>(
   cb: (
     pan: {
-      event: PointerEvent
+      event: TouchEvent | MouseEvent
       type: 'start' | 'move' | 'end'
       delta: { x: number, y: number }
       offset: { x: number, y: number }
@@ -36,24 +50,25 @@ export const onPan = <C extends readonly [] | {} | undefined = undefined>(
     const node = ctx.node as HTMLElement
     const context = { ctx, isDown: false, isMove: false, dx: 0, dy: 0, ox: 0, oy: 0 }
     const unlisteners = [
-      //! FIX FOR MOBILES
-      listenGlobal(node, 'touchstart', fix, context),
-      listenGlobal(node, 'touchmove', fix, context),
-      listenGlobal(node, 'touchend', fix, context),
-      
-      listenGlobal(node, 'pointerdown', (e: PointerEvent, c) => {
+      listenGlobal(node, 'tapstart-capture', (e: CustomEvent, c) => {
+        const evt: TouchEvent | MouseEvent = e.detail.event
+
         c.isDown = true, c.isMove = false
         c.ox = c.oy = 0
-        c.dx = e.clientX, c.dy = e.clientY
+        ;[c.dx, c.dy] = getClientXY(evt)
       }, context),
-      listenGlobal(document, 'pointermove', (e: PointerEvent, c) => {
+      listenGlobal(document, 'tapmove-capture', (e: CustomEvent, c) => {
+        const evt: TouchEvent | MouseEvent = e.detail.event
+        
         if (c.isMove) {
-          const cx = e.clientX, cy = e.clientY
+          const [cx, cy] = getClientXY(evt)
           const dx = cx - c.dx, dy = cy - c.dy
+          
           c.ox += dx, c.oy += dy
+          fix(evt)
           cb({
             type  : 'move',
-            event : e,
+            event : evt,
             detail: detail!,
             delta : { x: dx, y: dy },
             offset: { x: c.ox, y: c.oy }
@@ -61,21 +76,25 @@ export const onPan = <C extends readonly [] | {} | undefined = undefined>(
           c.dx = cx, c.dy = cy
         } else if (c.isDown) {
           c.isDown = false, c.isMove = true
+          fix(evt)
           cb({
             type  : 'start',
-            event : e,
+            event : evt,
             detail: detail!,
             delta : { x: 0, y: 0 },
             offset: { x: 0, y: 0 }
           }, c.ctx)
         }
       }, context),
-      listenGlobal(document, 'pointerup', (e: PointerEvent, c) => {
+      listenGlobal(document, 'tapend-capture', (e: CustomEvent, c) => {
         if (c.isMove) {
+          const evt: TouchEvent | MouseEvent = e.detail.event
+
           c.isDown = c.isMove = false
+          fix(evt)
           cb({
             type  : 'end',
-            event : e,
+            event : evt,
             detail: detail!,
             delta : { x: 0, y: 0 },
             offset: { x: c.ox, y: c.oy }

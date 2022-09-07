@@ -5,21 +5,28 @@ index.ts
 */
 import { listenGlobal as e } from "rease";
 
-var o = e => o => (e.$ = o.node, {
+var t = e => t => (e.$ = t.node, {
     destroy: () => {
         e.$ = null;
     }
-}), t = e => () => ({
-    created: o => {
-        e.$ = o.node;
+}), o = e => () => ({
+    created: t => {
+        e.$ = t.node;
     },
     destroy: () => {
         e.$ = null;
     }
-}), n = (e, o) => {
-    e.stopPropagation(), o.isMove && e.cancelable && e.preventDefault();
-}, i = (o, t) => i => {
-    var d = i.node, s = {
+}), a = e => {
+    e.stopPropagation(), e.cancelable && e.preventDefault();
+}, n = e => {
+    var t = 0, o = 0;
+    if ("touches" in e) {
+        var a = e.touches[0];
+        a && (t = a.clientX, o = a.clientY);
+    } else t = e.clientX, o = e.clientY;
+    return [ t, o ];
+}, i = (t, o) => i => {
+    var r = i.node, d = {
         ctx: i,
         isDown: !1,
         isMove: !1,
@@ -27,56 +34,60 @@ var o = e => o => (e.$ = o.node, {
         dy: 0,
         ox: 0,
         oy: 0
-    }, r = [ //! FIX FOR MOBILES
-    e(d, "touchstart", n, s), e(d, "touchmove", n, s), e(d, "touchend", n, s), e(d, "pointerdown", ((e, o) => {
-        o.isDown = !0, o.isMove = !1, o.ox = o.oy = 0, o.dx = e.clientX, o.dy = e.clientY;
-    }), s), e(document, "pointermove", ((e, n) => {
-        if (n.isMove) {
-            var i = e.clientX, d = e.clientY, s = i - n.dx, r = d - n.dy;
-            n.ox += s, n.oy += r, o({
+    }, s = [ e(r, "tapstart-capture", ((e, t) => {
+        var o = e.detail.event;
+        t.isDown = !0, t.isMove = !1, t.ox = t.oy = 0, [t.dx, t.dy] = n(o);
+    }), d), e(document, "tapmove-capture", ((e, i) => {
+        var r = e.detail.event;
+        if (i.isMove) {
+            var [d, s] = n(r), l = d - i.dx, v = s - i.dy;
+            i.ox += l, i.oy += v, a(r), t({
                 type: "move",
-                event: e,
-                detail: t,
+                event: r,
+                detail: o,
                 delta: {
-                    x: s,
-                    y: r
+                    x: l,
+                    y: v
+                },
+                offset: {
+                    x: i.ox,
+                    y: i.oy
+                }
+            }, i.ctx), i.dx = d, i.dy = s;
+        } else i.isDown && (i.isDown = !1, i.isMove = !0, a(r), t({
+            type: "start",
+            event: r,
+            detail: o,
+            delta: {
+                x: 0,
+                y: 0
+            },
+            offset: {
+                x: 0,
+                y: 0
+            }
+        }, i.ctx));
+    }), d), e(document, "tapend-capture", ((e, n) => {
+        if (n.isMove) {
+            var i = e.detail.event;
+            n.isDown = n.isMove = !1, a(i), t({
+                type: "end",
+                event: i,
+                detail: o,
+                delta: {
+                    x: 0,
+                    y: 0
                 },
                 offset: {
                     x: n.ox,
                     y: n.oy
                 }
-            }, n.ctx), n.dx = i, n.dy = d;
-        } else n.isDown && (n.isDown = !1, n.isMove = !0, o({
-            type: "start",
-            event: e,
-            detail: t,
-            delta: {
-                x: 0,
-                y: 0
-            },
-            offset: {
-                x: 0,
-                y: 0
-            }
-        }, n.ctx));
-    }), s), e(document, "pointerup", ((e, n) => {
-        n.isMove ? (n.isDown = n.isMove = !1, o({
-            type: "end",
-            event: e,
-            detail: t,
-            delta: {
-                x: 0,
-                y: 0
-            },
-            offset: {
-                x: n.ox,
-                y: n.oy
-            }
-        }, n.ctx)) : n.isDown && (n.isDown = !1);
-    }), s) ];
+            }, n.ctx);
+        } else n.isDown && (n.isDown = !1);
+    }), d) ];
     return () => {
-        for (var e = r.length; e-- > 0; ) r[e]();
+        for (var e = s.length; e-- > 0; ) s[e]();
     };
 };
 
-export { t as getNodeAfterCreated, o as getNodeBeforeCreated, i as onPan };
+export { o as getNodeAfterCreated, t as getNodeBeforeCreated, i as onPan };
