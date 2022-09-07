@@ -15,6 +15,11 @@ export const getNodeAfterCreated = (
   destroy: (): void => { storeForNode.$ = null },
 })
 
+const fix = (e: TouchEvent, c: any): void => {
+  e.stopPropagation()
+  if (c.isMove && e.cancelable) e.preventDefault()
+}
+
 export const onPan = <C extends readonly [] | {} | undefined = undefined>(
   cb: (
     pan: {
@@ -32,8 +37,10 @@ export const onPan = <C extends readonly [] | {} | undefined = undefined>(
     const context = { ctx, isDown: false, isMove: false, dx: 0, dy: 0, ox: 0, oy: 0 }
     const unlisteners = [
       //! FIX FOR MOBILES
-      listenGlobal(node, 'touchstart-prevent-stop', []),
-      listenGlobal(node, 'touchmove-prevent-stop', []),
+      listenGlobal(node, 'touchstart', fix, context),
+      listenGlobal(node, 'touchmove', fix, context),
+      listenGlobal(node, 'touchend', fix, context),
+      
       listenGlobal(node, 'pointerdown', (e: PointerEvent, c) => {
         c.isDown = true, c.isMove = false
         c.ox = c.oy = 0
@@ -73,9 +80,11 @@ export const onPan = <C extends readonly [] | {} | undefined = undefined>(
             delta : { x: 0, y: 0 },
             offset: { x: c.ox, y: c.oy }
           }, c.ctx)
-        }
+        } else if (c.isDown) c.isDown = false
       }, context)
     ]
 
-    return (): void => { for (let i = unlisteners.length; i--;) unlisteners[i]() }
+    return (): void => {
+      for (let i = unlisteners.length; i-- > 0;) unlisteners[i]()
+    }
   }

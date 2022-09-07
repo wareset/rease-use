@@ -16,21 +16,23 @@ var o = e => o => (e.$ = o.node, {
     destroy: () => {
         e.$ = null;
     }
-}), n = (o, t) => n => {
-    var d = n.node, i = {
-        ctx: n,
+}), n = (e, o) => {
+    e.stopPropagation(), o.isMove && e.cancelable && e.preventDefault();
+}, i = (o, t) => i => {
+    var d = i.node, s = {
+        ctx: i,
         isDown: !1,
         isMove: !1,
         dx: 0,
         dy: 0,
         ox: 0,
         oy: 0
-    }, s = [ //! FIX FOR MOBILES
-    e(d, "touchstart-prevent-stop", []), e(d, "touchmove-prevent-stop", []), e(d, "pointerdown", ((e, o) => {
+    }, r = [ //! FIX FOR MOBILES
+    e(d, "touchstart", n, s), e(d, "touchmove", n, s), e(d, "touchend", n, s), e(d, "pointerdown", ((e, o) => {
         o.isDown = !0, o.isMove = !1, o.ox = o.oy = 0, o.dx = e.clientX, o.dy = e.clientY;
-    }), i), e(document, "pointermove", ((e, n) => {
+    }), s), e(document, "pointermove", ((e, n) => {
         if (n.isMove) {
-            var d = e.clientX, i = e.clientY, s = d - n.dx, r = i - n.dy;
+            var i = e.clientX, d = e.clientY, s = i - n.dx, r = d - n.dy;
             n.ox += s, n.oy += r, o({
                 type: "move",
                 event: e,
@@ -43,7 +45,7 @@ var o = e => o => (e.$ = o.node, {
                     x: n.ox,
                     y: n.oy
                 }
-            }, n.ctx), n.dx = d, n.dy = i;
+            }, n.ctx), n.dx = i, n.dy = d;
         } else n.isDown && (n.isDown = !1, n.isMove = !0, o({
             type: "start",
             event: e,
@@ -57,8 +59,8 @@ var o = e => o => (e.$ = o.node, {
                 y: 0
             }
         }, n.ctx));
-    }), i), e(document, "pointerup", ((e, n) => {
-        n.isMove && (n.isDown = n.isMove = !1, o({
+    }), s), e(document, "pointerup", ((e, n) => {
+        n.isMove ? (n.isDown = n.isMove = !1, o({
             type: "end",
             event: e,
             detail: t,
@@ -70,11 +72,11 @@ var o = e => o => (e.$ = o.node, {
                 x: n.ox,
                 y: n.oy
             }
-        }, n.ctx));
-    }), i) ];
+        }, n.ctx)) : n.isDown && (n.isDown = !1);
+    }), s) ];
     return () => {
-        for (var e = s.length; e--; ) s[e]();
+        for (var e = r.length; e-- > 0; ) r[e]();
     };
 };
 
-export { t as getNodeAfterCreated, o as getNodeBeforeCreated, n as onPan };
+export { t as getNodeAfterCreated, o as getNodeBeforeCreated, i as onPan };
