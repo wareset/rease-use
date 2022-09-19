@@ -1,6 +1,6 @@
 import { TypeReaseContext, TypeReaseUse } from 'rease'
 import { TypeReaseContextElement, ReaseSubject } from 'rease'
-import { listenGlobal } from 'rease'
+import { listenEventGlobal } from 'rease'
 
 export const getNodeBeforeCreated = (
   storeForNode: ReaseSubject<any>
@@ -50,14 +50,14 @@ export const onPan = <C extends readonly [] | {} | undefined = undefined>(
     const node = ctx.node as HTMLElement
     const context = { ctx, isDown: false, isMove: false, dx: 0, dy: 0, ox: 0, oy: 0 }
     const unlisteners = [
-      listenGlobal(node, 'tapstart-capture', (e: CustomEvent, c) => {
+      listenEventGlobal(node, 'tapstart-capture', (e: CustomEvent, c) => {
         const evt: TouchEvent | MouseEvent = e.detail.event
 
         c.isDown = true, c.isMove = false
         c.ox = c.oy = 0
         ;[c.dx, c.dy] = getClientXY(evt)
       }, context),
-      listenGlobal(document, 'tapmove-capture', (e: CustomEvent, c) => {
+      listenEventGlobal(document, 'tapmove-capture', (e: CustomEvent, c) => {
         const evt: TouchEvent | MouseEvent = e.detail.event
         
         if (c.isMove) {
@@ -86,7 +86,7 @@ export const onPan = <C extends readonly [] | {} | undefined = undefined>(
           }, c.ctx)
         }
       }, context),
-      listenGlobal(document, 'tapend-capture', (e: CustomEvent, c) => {
+      listenEventGlobal(document, 'tapend-capture', (e: CustomEvent, c) => {
         if (c.isMove) {
           const evt: TouchEvent | MouseEvent = e.detail.event
 

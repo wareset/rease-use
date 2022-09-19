@@ -3,7 +3,7 @@
 dester builds:
 index.ts
 */
-import { listenGlobal as e } from "rease";
+import { listenEventGlobal as e } from "rease";
 
 var t = e => t => (e.$ = t.node, {
     destroy: () => {
