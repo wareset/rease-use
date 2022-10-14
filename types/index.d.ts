@@ -16,4 +16,4 @@ export declare const onPan: <C extends {} | readonly [] = undefined>(cb: (pan: {
         y: number;
     };
     detail: C;
-}, ctx: TypeReaseContextElement) => void, detail?: C) => TypeReaseUse;
+}, ctx: TypeReaseContextElement) => void, detail?: C, threshold?: number) => TypeReaseUse;

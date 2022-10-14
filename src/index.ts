@@ -1,6 +1,6 @@
 import { TypeReaseContext, TypeReaseUse } from 'rease'
 import { TypeReaseContextElement, ReaseSubject } from 'rease'
-import { listenEventGlobal } from 'rease'
+import { listenOnEventGlobal } from 'rease'
 
 export const getNodeBeforeCreated = (
   storeForNode: ReaseSubject<any>
@@ -19,6 +19,8 @@ export const getNodeAfterCreated = (
 //   e.stopPropagation()
 //   if (c.isMove && e.cancelable) e.preventDefault()
 // }
+
+const { abs } = Math
 
 const fix = (e: TouchEvent | MouseEvent): void => {
   e.stopPropagation()
@@ -45,65 +47,74 @@ export const onPan = <C extends readonly [] | {} | undefined = undefined>(
    },
     ctx: TypeReaseContextElement
   ) => void,
-  detail?: C
+  detail?: C,
+  threshold = 10
 ): TypeReaseUse => (ctx) => {
     const node = ctx.node as HTMLElement
-    const context = { ctx, isDown: false, isMove: false, dx: 0, dy: 0, ox: 0, oy: 0 }
-    const unlisteners = [
-      listenEventGlobal(node, 'tapstart-capture', (e: CustomEvent, c) => {
-        const evt: TouchEvent | MouseEvent = e.detail.event
+    const context = { ctx, isMove: false, dx: 0, dy: 0, ox: 0, oy: 0, es: null as any }
+    const unlisteners: any[] = []
+    unlisteners.push(
+      listenOnEventGlobal(node, 'tapstart', (e: CustomEvent, c) => {
+        const evt: TouchEvent | MouseEvent = context.es = e.detail.event
 
-        c.isDown = true, c.isMove = false
+        c.isMove = false
         c.ox = c.oy = 0
         ;[c.dx, c.dy] = getClientXY(evt)
-      }, context),
-      listenEventGlobal(document, 'tapmove-capture', (e: CustomEvent, c) => {
-        const evt: TouchEvent | MouseEvent = e.detail.event
-        
-        if (c.isMove) {
-          const [cx, cy] = getClientXY(evt)
-          const dx = cx - c.dx, dy = cy - c.dy
-          
-          c.ox += dx, c.oy += dy
-          fix(evt)
-          cb({
-            type  : 'move',
-            event : evt,
-            detail: detail!,
-            delta : { x: dx, y: dy },
-            offset: { x: c.ox, y: c.oy }
-          }, c.ctx)
-          c.dx = cx, c.dy = cy
-        } else if (c.isDown) {
-          c.isDown = false, c.isMove = true
-          fix(evt)
-          cb({
-            type  : 'start',
-            event : evt,
-            detail: detail!,
-            delta : { x: 0, y: 0 },
-            offset: { x: 0, y: 0 }
-          }, c.ctx)
-        }
-      }, context),
-      listenEventGlobal(document, 'tapend-capture', (e: CustomEvent, c) => {
-        if (c.isMove) {
-          const evt: TouchEvent | MouseEvent = e.detail.event
 
-          c.isDown = c.isMove = false
-          fix(evt)
-          cb({
-            type  : 'end',
-            event : evt,
-            detail: detail!,
-            delta : { x: 0, y: 0 },
-            offset: { x: c.ox, y: c.oy }
-          }, c.ctx)
-        } else if (c.isDown) c.isDown = false
+        // console.log('tapstart')
+
+        unlisteners.push(
+          listenOnEventGlobal(document, 'tapmove', (e: CustomEvent, c) => {
+            const evt: TouchEvent | MouseEvent = e.detail.event
+          
+            const [cx, cy] = getClientXY(evt)
+            const dx = cx - c.dx, dy = cy - c.dy
+          
+            c.ox += dx, c.oy += dy
+            // console.log('tapmove', c.isMove, abs(c.ox) + abs(c.oy))
+            if (c.isMove) {
+              fix(evt)
+              cb({
+                type  : 'move',
+                event : evt,
+                detail: detail!,
+                delta : { x: dx, y: dy },
+                offset: { x: c.ox, y: c.oy }
+              }, c.ctx)
+              c.dx = cx, c.dy = cy
+            } else if (abs(c.ox) + abs(c.oy) > threshold) {
+              c.isMove = true
+              fix(evt)
+              cb({
+                type  : 'start',
+                event : c.es,
+                detail: detail!,
+                delta : { x: 0, y: 0 },
+                offset: { x: 0, y: 0 }
+              }, c.ctx)
+            }
+          }, context),
+          listenOnEventGlobal(document, 'tapend', (e: CustomEvent, c) => {
+            for (;unlisteners.length > 1;) unlisteners.pop()()
+            // console.log('tapend')
+            if (c.isMove) {
+              c.isMove = false
+              const evt: TouchEvent | MouseEvent = e.detail.event
+              fix(evt)
+              cb({
+                type  : 'end',
+                event : evt,
+                detail: detail!,
+                delta : { x: 0, y: 0 },
+                offset: { x: c.ox, y: c.oy }
+              }, c.ctx)
+            }
+          }, context)
+        )
       }, context)
-    ]
+    )
 
     return (): void => {
-      for (let i = unlisteners.length; i-- > 0;) unlisteners[i]()
+      for (;unlisteners.length > 0;) unlisteners.pop()()
     }
   }
