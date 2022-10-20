@@ -5,57 +5,48 @@ index.ts
 */
 import { listenOnEventGlobal as e } from "rease";
 
-var t = e => t => (e.$ = t.node, {
-    destroy: () => {
-        e.$ = null;
-    }
-}), o = e => () => ({
-    created: t => {
-        e.$ = t.node;
-    },
-    destroy: () => {
-        e.$ = null;
-    }
-}), {abs: a} = Math, n = e => {
+var {abs: t} = Math, o = e => {
     e.stopPropagation(), e.cancelable && e.preventDefault();
-}, d = e => {
+}, a = e => {
     var t = 0, o = 0;
     if ("touches" in e) {
         var a = e.touches[0];
         a && (t = a.clientX, o = a.clientY);
     } else t = e.clientX, o = e.clientY;
     return [ t, o ];
-}, l = (t, o, l = 10) => r => {
-    var s = r.node, v = {
-        ctx: r,
-        isMove: !1,
+}, d = (d, n, s = 10) => l => {
+    var i = {
+        ctx: l,
+        d: n,
+        t: s,
+        is: !1,
         dx: 0,
         dy: 0,
         ox: 0,
         oy: 0,
-        es: null
-    }, i = [];
-    return i.push(e(s, "tapstart", ((r, s) => {
-        var x = v.es = r.detail.event;
-        s.isMove = !1, s.ox = s.oy = 0, [s.dx, s.dy] = d(x), i.push(e(document, "tapmove", ((e, r) => {
-            var s = e.detail.event, [v, i] = d(s), x = v - r.dx, y = i - r.dy;
-            r.ox += x, r.oy += y, r.isMove ? (n(s), t({
+        es: null,
+        u: []
+    };
+    return i.u.push(e(l.node, "tapstart", ((n, s) => {
+        var l = s.es = n.detail.event;
+        s.is = !1, s.ox = s.oy = 0, [s.dx, s.dy] = a(l), s.u.push(e(document, "tapmove", ((e, n) => {
+            var s = e.detail.event, [l, i] = a(s), r = l - n.dx, x = i - n.dy;
+            n.ox += r, n.oy += x, n.is ? (o(s), d({
                 type: "move",
                 event: s,
-                detail: o,
+                detail: n.d,
                 delta: {
-                    x: x,
-                    y: y
+                    x: r,
+                    y: x
                 },
                 offset: {
-                    x: r.ox,
-                    y: r.oy
+                    x: n.ox,
+                    y: n.oy
                 }
-            }, r.ctx), r.dx = v, r.dy = i) : a(r.ox) + a(r.oy) > l && (r.isMove = !0, n(s), 
-            t({
+            }, n.ctx), n.dx = l, n.dy = i) : t(n.ox) + t(n.oy) > n.t && (n.is = !0, o(s), d({
                 type: "start",
-                event: r.es,
-                detail: o,
+                event: n.es,
+                detail: n.d,
                 delta: {
                     x: 0,
                     y: 0
@@ -64,30 +55,30 @@ var t = e => t => (e.$ = t.node, {
                     x: 0,
                     y: 0
                 }
-            }, r.ctx));
-        }), v), e(document, "tapend", ((e, a) => {
-            for (;i.length > 1; ) i.pop()();
-            if (a.isMove) {
-                a.isMove = !1;
-                var d = e.detail.event;
-                n(d), t({
+            }, n.ctx));
+        }), s), e(document, "tapend", ((e, t) => {
+            for (;t.u.length > 1; ) t.u.pop()();
+            if (t.is) {
+                t.is = !1;
+                var a = e.detail.event;
+                o(a), d({
                     type: "end",
-                    event: d,
-                    detail: o,
+                    event: a,
+                    detail: t.d,
                     delta: {
                         x: 0,
                         y: 0
                     },
                     offset: {
-                        x: a.ox,
-                        y: a.oy
+                        x: t.ox,
+                        y: t.oy
                     }
-                }, a.ctx);
+                }, t.ctx);
             }
-        }), v));
-    }), v)), () => {
-        for (;i.length > 0; ) i.pop()();
+        }), s));
+    }), i)), () => {
+        for (;i.u.length > 0; ) i.u.pop()();
     };
 };
 
-export { o as getNodeAfterCreated, t as getNodeBeforeCreated, l as onPan };
+export { d as default };

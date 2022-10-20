@@ -1,19 +1,20 @@
 {
-  "name": "rease-use",
+  "name": "rease-use-on-pan",
   "version": "0.2.0",
-  "description": "wip",
+  "description": "wip: Pan event for rease",
   "keywords": [
     "rease",
-    "use"
+    "use",
+    "pan"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/wareset/rease-use",
+  "homepage": "https://github.com/wareset/rease-use-on-pan",
   "bugs": {
-    "url": "https://github.com/wareset/rease-use/issues"
+    "url": "https://github.com/wareset/rease-use-on-pan/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wareset/rease-use.git"
+    "url": "git+https://github.com/wareset/rease-use-on-pan.git"
   },
   "author": "rease <cftcview@gmail.com>",
   "main": "index",
