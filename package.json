@@ -33,7 +33,7 @@
     "dev": "npm run -s dester -- -w --no-r -m"
   },
   "peerDependencies": {
-    "rease": "^0.2.0"
+    "rease": "0.2.x"
   },
   "devDependencies": {
     "dester": "0.x",
